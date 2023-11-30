@@ -21,7 +21,7 @@ const App: React.FC = () => {
       <HeaderComponent onDarkModeChange={handleDarkModeChange}/>
       <Routes>
         <Route
-        path='/homepage'
+        path='/'
         element={<Homepage/>}
         />
         <Route 

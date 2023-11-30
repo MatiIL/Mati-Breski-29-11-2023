@@ -19,7 +19,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ onDarkModeChange }) =
     <Navbar className="bg-body-tertiary">
       <div className='d-flex justify-content-around ms-2'>
       <div className='d-flex flex-column'>
-        <Navbar.Brand href="/homepage">
+        <Navbar.Brand href="/">
           <img
             alt="Icon by Rizki Ahmad Fauzi"
             src="../home-icon.png"

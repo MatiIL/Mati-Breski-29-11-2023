@@ -1,6 +1,7 @@
 import React from 'react';
 import SearchField from './components/SearchField';
 import ChosenLocation from './components/ChosenLocation';
+import './HomePage.css';
 
 const Homepage: React.FC = () => {
 

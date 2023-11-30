@@ -1,3 +1,5 @@
+import { storeResponseLocally } from "../utils/storeResponseLocally";
+
 const apiKey = process.env.REACT_APP_ACCU_KEY;
 
 export async function autocompleteSearch(query: string): Promise<any> {
@@ -7,13 +9,17 @@ export async function autocompleteSearch(query: string): Promise<any> {
     const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error("Network response was not ok");
     }
 
     const data = await response.json();
-    return data;
+
+    if (process.env.NODE_ENV === "development") {
+      storeResponseLocally("autocompleteResponse", data);
+    }
+    
   } catch (error) {
-    console.error('Error fetching location autocomplete:', error);
+    console.error("Error fetching location autocomplete:", error);
     throw error;
   }
 }
