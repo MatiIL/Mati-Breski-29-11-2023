@@ -1,0 +1,24 @@
+.navbar-expand {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+.navbar-brand {
+    font-size: smaller;
+}
+.navbar-item-text {
+    font-size: smaller;
+} 
+div.fs-6.form-check.form-switch {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+label.form-check-label {
+    font-size: smaller;
+    margin-top: 2px;
+    margin-left: 5px;
+}
+.form-check-input:checked {
+    background-color: #4c4e51;
+    border-color: #3d3d3e;
+}
