@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
 import './App.css';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { DarkModeProvider } from './context/DarkModeContext';
 import Homepage from './pages/HomePage/Homepage';
 import Favorites from './pages/FavoritesPage/Favorites';
-import HeaderComponent from './common/HeaderComponent';
+import HeaderComponent from './common/HeaderComponent/HeaderComponent';
 
 const App: React.FC = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  const handleDarkModeChange = (isChecked: boolean) => {
-    setIsDarkMode(isChecked);
-  };
 
   return (
-    <div 
-    className="App"
-    data-bs-theme={isDarkMode ? 'dark' : 'light'}
-    >
+    <DarkModeProvider>
       <BrowserRouter>
-      <HeaderComponent onDarkModeChange={handleDarkModeChange}/>
+      <HeaderComponent/>
       <Routes>
         <Route
         path='/'
@@ -30,7 +23,7 @@ const App: React.FC = () => {
         />
       </Routes>
       </BrowserRouter>
-    </div>
+      </DarkModeProvider>
   );
 };
 

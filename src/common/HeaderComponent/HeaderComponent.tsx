@@ -1,23 +1,21 @@
-import React, { useState, ChangeEvent } from 'react';
+import React from 'react';
 import { Navbar, Form } from 'react-bootstrap';
 import './HeaderComponent.css';
+import { useDarkMode } from '../../context/DarkModeContext';
 
-interface HeaderComponentProps {
-  onDarkModeChange: (isChecked: boolean) => void;
-}
+const HeaderComponent: React.FC = () => {
+  const { darkMode, setDarkMode } = useDarkMode();
 
-const HeaderComponent: React.FC<HeaderComponentProps> = ({ onDarkModeChange }) => {
-  const [isDarkModeChecked, setIsDarkModeChecked] = useState(false);
-
-  const handleDarkModeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const isChecked = e.target.checked;
-    setIsDarkModeChecked(isChecked);
-    onDarkModeChange(isChecked);
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => !prev);
   };
 
   return (
-    <Navbar className="bg-body-tertiary">
-      <div className='d-flex justify-content-around ms-2'>
+    <Navbar 
+    className={darkMode? "bg-dark" : "bg-body-tertiary"}
+    // fixed="top"
+    >
+      <div className='d-flex justify-content-around ms-3'>
       <div className='d-flex flex-column'>
         <Navbar.Brand href="/">
           <img
@@ -27,7 +25,7 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ onDarkModeChange }) =
             height="30"
             className="d-inline-block align-top"
           />{' '}
-          <div className="navbar-item-text">Home</div>
+          <div className={darkMode? "light-navbar-item-text" : "navbar-item-text"}>Home</div>
         </Navbar.Brand>
       </div>
       <div className='d-flex flex-column'>
@@ -39,18 +37,20 @@ const HeaderComponent: React.FC<HeaderComponentProps> = ({ onDarkModeChange }) =
             height="30"
             className="d-inline-block align-top"
           />{' '}
-          <div className="navbar-item-text">Favorites</div>
+          <div className={darkMode? "light-navbar-item-text" : "navbar-item-text"}>Favorites</div>
         </Navbar.Brand>
       </div>
       </div>
-      <Form>
+      <Form className='d-flex'>
+        <div className='navbar-item-text me-3 mb-2 text-light'>
+          light mode
+        </div>
         <Form.Check
           type="switch"
           id="custom-switch"
           label="dark mode"
           className='navbar-item-text me-2'
-          checked={isDarkModeChecked}
-          onChange={handleDarkModeChange}
+          onChange={toggleDarkMode}
         />
       </Form>
     </Navbar>

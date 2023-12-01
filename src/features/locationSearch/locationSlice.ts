@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../state/store';
-import { autocompleteSearch } from '../../api/autocompleteSearch';
-import { getStorage } from '../../utils/getStoredResponse';
+import { autocompleteSearch } from '../../api/weatherApi';
+import { getStoredResponse } from '../../utils';
 
 interface Location {
   Key: string;
@@ -17,7 +17,7 @@ interface LocationState {
 }
 
 const initialState: LocationState = {
-  locations: getStorage('autocompleteResponse') || [],
+  locations: getStoredResponse('autocompleteSearch') || [],
   status: 'idle',
 };
 
@@ -26,8 +26,7 @@ export const fetchLocations = createAsyncThunk(
   async (query: string) => {
     try {
       await autocompleteSearch(query);
-      const response = getStorage('autocompleteResponse');
-      console.log(response)
+      const response = getStoredResponse('autocompleteSearch');
       const requiredKeys = response.map((location: any) => ({
         Key: location.Key,
         LocalizedName: location.LocalizedName,
@@ -35,7 +34,6 @@ export const fetchLocations = createAsyncThunk(
           LocalizedName: location.Country.LocalizedName,
         },
       }));
-      console.log(requiredKeys)
       return requiredKeys;
     } catch (error) {
       throw error;

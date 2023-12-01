@@ -6,9 +6,9 @@ import './HomePage.css';
 const Homepage: React.FC = () => {
 
     return (
-        <div className='wrapper mt-4 d-flex flex-column justify-content-evenly align-items-center'>
+        <div className='wrapper d-flex flex-column align-items-center'>
             <SearchField/>
-            <ChosenLocation />
+            <ChosenLocation/>
         </div>
     )
 }

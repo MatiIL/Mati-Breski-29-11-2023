@@ -8,6 +8,10 @@
 .navbar-item-text {
     font-size: smaller;
 } 
+.light-navbar-item-text {
+    font-size: smaller;
+    color: white;
+}
 div.fs-6.form-check.form-switch {
     display: flex;
     flex-direction: column;
