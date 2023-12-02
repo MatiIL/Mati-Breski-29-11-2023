@@ -13,6 +13,6 @@ export const dailyForecasts = async (id: string): Promise<any> => {
 }
 
 export const getCurrentWeather = async (id: string): Promise<any> => {
-  const url = `http://dataservice.accuweather.com/currentconditions/v1/${id}`;
-  return handleApiResponse(url, "getCurrentWeather");
+  const url = `http://dataservice.accuweather.com/currentconditions/v1/${id}?apikey=${apiKey}`;
+  return handleApiResponse(url, "currentWeather");
 }

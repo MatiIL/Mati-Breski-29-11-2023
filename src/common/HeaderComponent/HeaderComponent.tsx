@@ -13,7 +13,7 @@ const HeaderComponent: React.FC = () => {
   return (
     <Navbar 
     className={darkMode? "bg-dark" : "bg-body-tertiary"}
-    // fixed="top"
+    sticky='top'
     >
       <div className='d-flex justify-content-around ms-3'>
       <div className='d-flex flex-column'>

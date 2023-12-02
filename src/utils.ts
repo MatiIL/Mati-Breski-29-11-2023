@@ -1,4 +1,4 @@
-const storeResponseLocally = (itemName: string, data: any) => {
+export const storeResponseLocally = (itemName: string, data: any) => {
     try {
       localStorage.setItem(itemName, JSON.stringify(data));
     } catch (error) {
@@ -36,3 +36,8 @@ export const getStoredResponse = (itemName: string): any | null => {
     return null;
   }
 };
+
+export const convertToCelsius = (val: number): number => {
+  const celsiusValue = (val - 32) * (5/9);
+  return Math.round(celsiusValue);
+}

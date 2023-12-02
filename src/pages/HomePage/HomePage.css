@@ -1,9 +1,19 @@
 .wrapper {
-    background: linear-gradient(to bottom, #F8F9FA, #7392b448);
-  /* Add more color stops as needed */
-  height: 100vh; /* Adjust the height as needed */
+  background: linear-gradient(to bottom, #f8f9fa, #7392b448);
+  height: 100vh;
 }
 
-.form-floating>label {
-    font-size: smaller;
+.form-floating > label {
+  font-size: smaller;
+}
+
+.location-details {
+  font-size: smaller;
+}
+
+@media screen and (max-width: 636px) {
+  .daily-weather {
+    display: flex;
+    flex-direction: column;
+  }
 }

@@ -5,16 +5,16 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { dailyForecasts } from "../../api/weatherApi";
-import { getStoredResponse } from "../../utils";
+import { storeResponseLocally, getStoredResponse } from "../../utils";
 
-interface DailyForecast {
-  Date: Date | string;
+export interface DailyForecast {
   minTemp: number;
   maxTemp: number;
   Day: {
     Icon: number;
     IconPhrase: string;
   };
+  timestamp: number;
 }
 
 interface ForecastState {
@@ -42,9 +42,14 @@ export const fetchDailyForecasts = createAsyncThunk(
   "forecast/dailyForecasts",
   async (locationId: string, { dispatch }) => {
     try {
-      await dailyForecasts(locationId);
-      const response = getStoredResponse("dailyForecasts");
-
+        let response;
+        if (process.env.NODE_ENV === "development") {
+            await dailyForecasts(locationId);
+            response = getStoredResponse("dailyForecasts");
+        } else {
+            response = dailyForecasts(locationId);
+        }
+      
       const dailyForecastsResponse = response?.DailyForecasts || [];
       const headlineText = response?.Headline?.Text || "";
 
@@ -53,7 +58,6 @@ export const fetchDailyForecasts = createAsyncThunk(
           Text: headlineText,
         },
         DailyForecasts: dailyForecastsResponse.map((forecast: any) => ({
-          Date: forecast.Date,
           timestamp: new Date(forecast.Date).getTime(),
           minTemp: forecast.Temperature.Minimum.Value,
           maxTemp: forecast.Temperature.Maximum.Value,
@@ -64,7 +68,12 @@ export const fetchDailyForecasts = createAsyncThunk(
         })),
       };
       dispatch(fetchDailyForecastsFulfilled(modifiedResponse));
-      return modifiedResponse;
+      if (process.env.NODE_ENV === "development") {
+      storeResponseLocally("dailyForecasts", modifiedResponse);
+      return getStoredResponse("dailyForecasts");;
+      } else {
+        return modifiedResponse;
+      }
     } catch (error) {
       throw error;
     }
