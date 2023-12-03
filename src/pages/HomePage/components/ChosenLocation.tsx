@@ -19,28 +19,36 @@ const ChosenLocation: React.FC = () => {
     // }, [dailyForecasts])
 
     return (
-        <div className="align-self-center w-75 mt-3">
-            <Card className="text-center">
-                <Card.Header>
-                    <CurrentWeatherHeader />
-                </Card.Header>
-                <Card.Body>
-                    <Card.Title
-                    className='fs-3 m-5'
-                    >{currentWeather}</Card.Title>
-                    <Container>
-                        <Row>
-                            {dailyForecasts.length && dailyForecasts.map((day) => (
-                                <Col className='daily-weather' key={day.timestamp}>
-                                <WeatherCard dailyData={day}/>
-                                </Col>
-                            ))}
-                        </Row>
-                    </Container>
-                </Card.Body>
-            </Card>
-        </div>
+        currentWeather && dailyForecasts ? (
+            <div className="align-self-center w-75 mt-3">
+                <Card className="text-center">
+                    <Card.Header>
+                        <CurrentWeatherHeader />
+                    </Card.Header>
+                    <Card.Body>
+                        <Card.Title
+                            className='fs-3 m-5'
+                        >{currentWeather}</Card.Title>
+                        <Container>
+                            <Row>
+                                {dailyForecasts.length && dailyForecasts.map((day) => (
+                                    <Col 
+                                    className='daily-weather m-2' 
+                                    key={day.timestamp}
+                                    sm={true}
+                                    >
+                                        <WeatherCard dailyData={day} />
+                                    </Col>
+                                ))}
+                            </Row>
+                        </Container>
+                    </Card.Body>
+                </Card>
+            </div>
+
+        ) : (<></>)
     )
+
 }
 
 export default ChosenLocation;

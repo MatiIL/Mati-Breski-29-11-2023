@@ -13,7 +13,7 @@ import {
     temparature: number;
   }
   
-  interface CurrentWeatherState {
+  export interface CurrentWeatherState {
     weatherText: string;
     weatherIcon: number;
     temparature: number;

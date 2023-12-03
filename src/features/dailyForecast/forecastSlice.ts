@@ -17,7 +17,7 @@ export interface DailyForecast {
   timestamp: number;
 }
 
-interface ForecastState {
+export interface ForecastState {
   headline: {
     Text: string;
   };

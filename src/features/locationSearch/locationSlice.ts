@@ -11,13 +11,13 @@ interface Location {
   };
 }
 
-interface LocationState {
+export interface LocationState {
   locations: Location[];
   status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: LocationState = {
-  locations: getStoredResponse('autocompleteSearch') || [],
+  locations: [],
   status: 'idle',
 };
 
@@ -50,7 +50,12 @@ export const queryUpdated = (text: string) => {
 const locationSlice = createSlice({
   name: 'location',
   initialState,
-  reducers: {},
+  reducers: {
+    resetSearchState: (state) => {
+      state.locations = [];
+      state.status = 'idle';
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchLocations.pending, (state) => {

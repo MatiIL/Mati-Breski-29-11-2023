@@ -4,6 +4,7 @@ import React, {
   useRef,
   ChangeEvent
 } from 'react';
+import { useLocationDetails } from '../../../context/LocationNameContext';
 import { AppDispatch } from '../../../state/store';
 import { useAppDispatch, useAppSelector } from '../../../state/hooks';
 import { fetchLocations, queryUpdated } from '../../../features/locationSearch/locationSlice';
@@ -11,12 +12,14 @@ import { fetchDailyForecasts, fetchDailyForecastsFulfilled } from '../../../feat
 import { fetchCurrentWeather } from '../../../features/currentWeather/currentSlice';
 import { Form, FloatingLabel, Button } from 'react-bootstrap';
 
+
 const SearchField: React.FC = () => {
-  const dispatch: AppDispatch  = useAppDispatch();
+  const dispatch: AppDispatch = useAppDispatch();
   const searchResults = useAppSelector((state) => state.location.locations);
   const debounceTime = 300; // Adjust the debounce time as needed
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const dropdownRef = useRef<HTMLUListElement>(null);
+  const { setLocationDetails } = useLocationDetails();
 
   const handleTyping = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -27,12 +30,20 @@ const SearchField: React.FC = () => {
       console.error('fetchLocations rejected:', error);
     }
   };
-  
 
-  const handleClick = async (e: React.MouseEvent<HTMLAnchorElement>, key: string) => {
+  const handleClick = async (
+    e: React.MouseEvent<HTMLAnchorElement>, 
+    key: string,
+    name: string
+    ) => {
     await dispatch(fetchCurrentWeather(key));
     await dispatch(fetchDailyForecasts(key));
+    setLocationDetails({
+      name: name,
+      id: key
+    });
     setDropdownVisible(false);
+    dispatch({ type: 'location/resetSearchState' });
   };
 
   const handleDocumentClick = (e: MouseEvent) => {
@@ -59,6 +70,7 @@ const SearchField: React.FC = () => {
           <Form.Control
             type="search"
             placeholder='type desired location'
+            autoComplete="off"
             onChange={(e: ChangeEvent<HTMLInputElement>) => handleTyping(e)}
           />
         </FloatingLabel>
@@ -67,13 +79,15 @@ const SearchField: React.FC = () => {
         <div>
           <ul
             ref={dropdownRef}
-            className='list-group list-group-flush'>
+            className={`list-group list-group-flush ${isDropdownVisible ? 'visible' : ''}`}
+            >
             {searchResults.length && searchResults.map((location) => (
               <a
                 href="#"
                 key={location.Key}
                 className='list-group-item list-group-item-action'
-                onClick={(e: React.MouseEvent<HTMLAnchorElement>) => handleClick(e, location.Key)}
+                onClick={(e: React.MouseEvent<HTMLAnchorElement>) =>
+                    handleClick(e, location.Key, location.LocalizedName)}
               >
                 {location.LocalizedName}, {location.Country.LocalizedName}
               </a>

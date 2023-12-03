@@ -1,17 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocationDetails } from '../../../context/LocationNameContext';
+import { RootState } from '../../../state/store';
+import { useAppDispatch, useAppSelector } from '../../../state/hooks';
+import { 
+    addToFavorites, 
+    removeFromFavorites, 
+    isLocationInFavorites,
+    selectFavorites, 
+} from '../../../features/favoriteLocations/favortiesSlice';
 import { Stack, Button } from 'react-bootstrap';
-import { useAppSelector } from '../../../state/hooks';
 import { convertToCelsius } from '../../../utils';
 import { weatherIconMapping } from '../../../common/weatherIconMapping';
 
 const CurrentWeatherHeader: React.FC = () => {
     const weatherDetails = useAppSelector((state) => state.currentWeather);
-    const [like, setLike] = useState(false);
+    const { locationDetails } = useLocationDetails();
+    const locationName = locationDetails.name;
+    const locationId = locationDetails.id;
+
+    const dispatch = useAppDispatch();
+    const favorites = useAppSelector((state: RootState) => state.favorites.locations);
+    const isFavoriteLocation = useAppSelector(selectFavorites).locations.some((location) => location.id === locationId);
 
     const heartStyle = {
         fontSize: '24px',
         marginRight: '8px',
     };
+
+    const handleClick = () => {
+        if (!isFavoriteLocation) {
+            dispatch(addToFavorites({ id: locationId, name: locationName }));
+          } else {
+            dispatch(removeFromFavorites(locationId));
+          }
+    }
+
+    useEffect(() => {
+        console.log(favorites)
+
+    }, [handleClick])
 
     return (
         <Stack
@@ -21,16 +48,15 @@ const CurrentWeatherHeader: React.FC = () => {
         >
             <div className="p-2 d-flex">
                 <div>
-                    <img 
-                    src={weatherIconMapping[weatherDetails.weatherIcon]}
-                    alt={weatherDetails.weatherText}
+                    <img
+                        src={weatherIconMapping[weatherDetails.weatherIcon]}
+                        alt={weatherDetails.weatherText}
                     />
                 </div>
-                <div 
-                className='location-details d-flex flex-column align-items-start'>
+                <div
+                    className='location-details d-flex flex-column align-items-start'>
                     <div>
-                        Tel Aviv
-
+                        {locationName}
                     </div>
                     <div>
                         {convertToCelsius(weatherDetails.temparature)}&deg;c
@@ -39,13 +65,13 @@ const CurrentWeatherHeader: React.FC = () => {
             </div>
             <div className="p-2 d-flex">
                 <span style={heartStyle}>
-                    {like ? '♥' : '♡'}
+                    {isFavoriteLocation ? '♥' : '♡'}
                 </span>
                 <Button
                     variant="outline-secondary"
                     size="sm"
                     className=""
-                    onClick={() => setLike((prevState) => !prevState)}
+                    onClick={handleClick}
                 >
                     Add to Favorites
                 </Button>
@@ -53,4 +79,5 @@ const CurrentWeatherHeader: React.FC = () => {
         </Stack>
     );
 }
+
 export default CurrentWeatherHeader;

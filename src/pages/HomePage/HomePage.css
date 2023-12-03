@@ -1,17 +1,24 @@
 .wrapper {
+  position: relative;
   background: linear-gradient(to bottom, #f8f9fa, #7392b448);
   height: 100vh;
+  overflow-y: scroll;
 }
-
 .form-floating > label {
   font-size: smaller;
 }
-
+.list-group {
+  position: fixed;
+  margin: auto 0;
+  z-index: 1; /* Set a higher z-index to make it appear above other elements */
+}
+.visible {
+  display: block;
+}
 .location-details {
   font-size: smaller;
 }
-
-@media screen and (max-width: 636px) {
+@media screen and (max-width: 619px) {
   .daily-weather {
     display: flex;
     flex-direction: column;
