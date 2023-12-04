@@ -23,7 +23,6 @@ const ChosenLocation: React.FC = () => {
     const currentWeatherFromApi = useAppSelector((state) => state.currentWeather);
     const locationDetails = useAppSelector((state) => state.geoposition.location);
     const { userGesture } = useUserGestureContext();
-    const loadingStatus = useAppSelector((state) => state.forecast.status);
 
     useEffect(() => {
         if (userGesture) {
@@ -37,12 +36,16 @@ const ChosenLocation: React.FC = () => {
                 });
             }
             fetchLocationDetails();
+        } else {
+
         }
 
     }, [userGesture, dispatch]);
 
     useEffect(() => {
-        if (locationDetails) {
+        if (dailyForecasts.length) {
+            return;
+        } else if (locationDetails) {
             const fetchUserLocationData = async () => {
                 try {
                     await dispatch(fetchCurrentWeather({ locationId: locationDetails.id, name: locationDetails.name }));
@@ -59,7 +62,7 @@ const ChosenLocation: React.FC = () => {
             fetchUserLocationData();
         }
 
-    }, [locationDetails, dispatch])
+    }, [locationDetails, dailyForecasts, dispatch])
 
     return (
         <>

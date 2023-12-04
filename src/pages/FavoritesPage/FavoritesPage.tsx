@@ -1,7 +1,6 @@
 import React from 'react';
 import { useAppSelector } from '../../state/hooks';
 import WeatherCard from '../../common/WeatherCard/WeatherCard';
-import AnimationComponent from '../HomePage/components/animation/AnimationComponent';
 import { Container, Row, Col } from 'react-bootstrap';
 import './FavoritesPage.css';
 

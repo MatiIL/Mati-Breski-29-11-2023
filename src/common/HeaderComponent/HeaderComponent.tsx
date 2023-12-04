@@ -87,7 +87,6 @@ const HeaderComponent: React.FC = () => {
         </Form>
       </Navbar>
     </>
-
   )
 }
 
