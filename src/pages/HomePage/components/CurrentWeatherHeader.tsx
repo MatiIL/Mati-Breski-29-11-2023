@@ -8,7 +8,6 @@ import Button from 'react-bootstrap/Button';
 const CurrentWeatherHeader: React.FC = () => {
     const weatherDetails = useAppSelector((state) => state.currentWeather);
     const { 
-        favorites,
         isLocationInFavorites,
         addToFavorites,
         removeFromFavorites
@@ -16,10 +15,7 @@ const CurrentWeatherHeader: React.FC = () => {
 
     const handleClick = () => {
         if (!isLocationInFavorites(weatherDetails.id)) {
-            console.log(weatherDetails.id)
-            console.log("adding to favorites ", favorites)
             addToFavorites({ id: weatherDetails.id, name: weatherDetails.name });
-            console.log("added to favorites ", favorites)
         } else {
             removeFromFavorites(weatherDetails.id);
         }
