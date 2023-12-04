@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAppSelector } from '../../state/hooks';
 import WeatherCard from '../../common/WeatherCard/WeatherCard';
+import AnimationComponent from '../HomePage/components/animation/AnimationComponent';
 import { Container, Row, Col } from 'react-bootstrap';
 import './FavoritesPage.css';
 
@@ -8,7 +9,7 @@ const FavoritesPage: React.FC = () => {
     const favoritesWeatherData = useAppSelector((state) => state.favorites.locations);
 
     return (
-        <div className='d-flex flex-column align-items-center'>
+        <div className='fav-wrapper d-flex flex-column align-items-center'>
             <h1 className='fs-4 mt-2'>
                 Your Favorite Locations
                 </h1>

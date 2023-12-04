@@ -15,6 +15,7 @@ import WeatherCard from '../../../common/WeatherCard/WeatherCard';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUserGestureContext } from '../../../context/UserGestureContext';
+import AnimationComponent from './animation/AnimationComponent';
 
 const ChosenLocation: React.FC = () => {
     const dispatch: AppDispatch = useAppDispatch();
@@ -22,6 +23,7 @@ const ChosenLocation: React.FC = () => {
     const currentWeatherFromApi = useAppSelector((state) => state.currentWeather);
     const locationDetails = useAppSelector((state) => state.geoposition.location);
     const { userGesture } = useUserGestureContext();
+    const loadingStatus = useAppSelector((state) => state.forecast.status);
 
     useEffect(() => {
         if (userGesture) {
@@ -88,7 +90,8 @@ const ChosenLocation: React.FC = () => {
                         </Card.Body>
                     </Card>
                 </div>
-            ) : <></>}
+            ) : <AnimationComponent />
+            }
         </>
     );
 }
