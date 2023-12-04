@@ -2,7 +2,7 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { DarkModeProvider } from './context/DarkModeContext';
 import { FavoritesContextProvider } from './context/FavoritesContext';
-import HomePage from './pages/HomePage/HomePage';
+import HomePage from './pages/HomePage/Homepage';
 import FavoritesPage from './pages/FavoritesPage/FavoritesPage';
 import HeaderComponent from './common/HeaderComponent/HeaderComponent';
 

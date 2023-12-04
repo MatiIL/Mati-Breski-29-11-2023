@@ -14,7 +14,7 @@ const ChosenLocation: React.FC = () => {
     const currentWeatherFromApi = useAppSelector((state) => state.currentWeather);
 
     return (
-        currentWeatherFromApi && dailyForecasts ? (
+        currentWeatherFromApi && dailyForecasts.length ? (
             <div className="align-self-center w-75 mt-4">
                 <Card className="text-center">
                     <Card.Header>
