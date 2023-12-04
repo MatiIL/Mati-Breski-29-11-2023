@@ -1,8 +1,16 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../../state/store";
+import { getCurrentWeather } from '../../api/weatherApi';
+import WeatherData from "../../common/weatherTypes";
+
+export interface LocationWithWeather {
+  id: string;
+  name: string;
+  currentWeather?: WeatherData | null;
+}
 
 export interface FavoritesState {
-  locations: Array<{ id: string; name: string }>;
+  locations: LocationWithWeather[];
 }
 
 const initialState: FavoritesState = {
@@ -16,6 +24,40 @@ export const isLocationInFavorites = (state: RootState, locationId: string) => {
   return favorites.some((location) => location.id === locationId);
 };
 
+export const fetchCurrentWeatherForFavorites = createAsyncThunk<
+  LocationWithWeather[],
+  { ids: string[]; names: string[] }
+>('favorites/fetchCurrentWeatherForFavorites', async ({ ids, names }) => {
+  try {
+    const locations: LocationWithWeather[] = [];
+
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      const name = names[i];
+      const response = await getCurrentWeather(id);
+
+      if (response.length > 0) {
+        const { Temperature, WeatherIcon, WeatherText } = response[0];
+        const temperatureValue = Temperature?.Imperial?.Value ?? 0;
+        const currentWeather: WeatherData = {
+          id: id,
+          name: name,
+          weatherText: WeatherText,
+          weatherIcon: WeatherIcon,
+          temparature: temperatureValue,
+        };
+
+        locations.push({ id, name, currentWeather });
+      }
+    }
+
+    return locations;
+  } catch (error) {
+    throw error;
+  }
+});
+
+
 const favoritesSlice = createSlice({
   name: "favorites",
   initialState,
@@ -24,13 +66,21 @@ const favoritesSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; name: string }>
     ) => {
-      state.locations.push(action.payload);
+      console.log('Adding to favorites:', action.payload);
+      state.locations.push({ ...action.payload, currentWeather: null });
+      console.log('New state:', state.locations);
     },
     removeFromFavorites: (state, action: PayloadAction<string>) => {
       state.locations = state.locations.filter(
         (location) => location.id !== action.payload
       );
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCurrentWeatherForFavorites.fulfilled, (state, action) => {
+        state.locations = action.payload;
+      });
   },
 });
 

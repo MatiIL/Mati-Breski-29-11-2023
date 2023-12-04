@@ -4,13 +4,12 @@ import React, {
   useRef,
   ChangeEvent
 } from 'react';
-import { useLocationDetails } from '../../../context/LocationNameContext';
 import { AppDispatch } from '../../../state/store';
 import { useAppDispatch, useAppSelector } from '../../../state/hooks';
 import { fetchLocations, queryUpdated } from '../../../features/locationSearch/locationSlice';
 import { fetchDailyForecasts, fetchDailyForecastsFulfilled } from '../../../features/dailyForecast/forecastSlice';
 import { fetchCurrentWeather } from '../../../features/currentWeather/currentSlice';
-import { Form, FloatingLabel, Button } from 'react-bootstrap';
+import { Form, FloatingLabel } from 'react-bootstrap';
 
 
 const SearchField: React.FC = () => {
@@ -19,7 +18,6 @@ const SearchField: React.FC = () => {
   const debounceTime = 300; // Adjust the debounce time as needed
   const [isDropdownVisible, setDropdownVisible] = useState(false);
   const dropdownRef = useRef<HTMLUListElement>(null);
-  const { setLocationDetails } = useLocationDetails();
 
   const handleTyping = async (e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -36,12 +34,8 @@ const SearchField: React.FC = () => {
     key: string,
     name: string
     ) => {
-    await dispatch(fetchCurrentWeather(key));
+    await dispatch(fetchCurrentWeather({ locationId: key, name }));
     await dispatch(fetchDailyForecasts(key));
-    setLocationDetails({
-      name: name,
-      id: key
-    });
     setDropdownVisible(false);
     dispatch({ type: 'location/resetSearchState' });
   };

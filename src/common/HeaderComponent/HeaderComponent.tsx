@@ -1,23 +1,37 @@
 import React from 'react';
+import { useFavoritesContext } from '../../context/FavoritesContext';
+import { useNavigate, Link } from 'react-router-dom';
 import { Navbar, Form } from 'react-bootstrap';
 import './HeaderComponent.css';
 import { useDarkMode } from '../../context/DarkModeContext';
+import { useAppDispatch } from '../../state/hooks';
+import { fetchCurrentWeatherForFavorites } from '../../features/favoriteLocations/favortiesSlice';
 
 const HeaderComponent: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { favorites } = useFavoritesContext();
   const { darkMode, setDarkMode } = useDarkMode();
+  const navigate = useNavigate();
 
   const toggleDarkMode = () => {
     setDarkMode((prev) => !prev);
   };
 
+  const handleFavoritesClick = async () => {
+    const favoriteIds = favorites.map((location) => location.id);
+    const favoriteNames = favorites.map((location) => location.name);
+    await dispatch(fetchCurrentWeatherForFavorites({ ids: favoriteIds, names: favoriteNames }));
+    navigate("/favorites");
+  };
+  
   return (
     <Navbar 
     className={darkMode? "bg-dark" : "bg-body-tertiary"}
     sticky='top'
     >
-      <div className='d-flex justify-content-around ms-3'>
+      <div className='d-flex ms-3'>
       <div className='d-flex flex-column'>
-        <Navbar.Brand href="/">
+        <Link to="/" className='nav-link text-dark text-decoration-none'>
           <img
             alt="Icon by Rizki Ahmad Fauzi"
             src="../home-icon.png"
@@ -26,10 +40,14 @@ const HeaderComponent: React.FC = () => {
             className="d-inline-block align-top"
           />{' '}
           <div className={darkMode? "light-navbar-item-text" : "navbar-item-text"}>Home</div>
-        </Navbar.Brand>
+        </Link>
       </div>
       <div className='d-flex flex-column'>
-        <Navbar.Brand href="/favorites">
+        <Link 
+        to="/favorites" 
+        onClick={handleFavoritesClick}
+        className='nav-link text-dark text-decoration-none ms-3'
+        >
           <img
             alt="Icon by Rizki Ahmad Fauzi"
             src="../favs-icon.png"
@@ -38,7 +56,7 @@ const HeaderComponent: React.FC = () => {
             className="d-inline-block align-top"
           />{' '}
           <div className={darkMode? "light-navbar-item-text" : "navbar-item-text"}>Favorites</div>
-        </Navbar.Brand>
+        </Link>
       </div>
       </div>
       <Form className='d-flex'>

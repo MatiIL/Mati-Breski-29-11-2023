@@ -6,7 +6,7 @@ import './HomePage.css';
 const Homepage: React.FC = () => {
 
     return (
-        <div className='wrapper d-flex flex-column align-items-center'>
+        <div className='wrapper d-flex flex-column  align-items-center'>
             <SearchField/>
             <ChosenLocation/>
         </div>

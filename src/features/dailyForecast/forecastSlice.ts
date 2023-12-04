@@ -5,75 +5,41 @@ import {
   PayloadAction,
 } from "@reduxjs/toolkit";
 import { dailyForecasts } from "../../api/weatherApi";
-import { storeResponseLocally, getStoredResponse } from "../../utils";
-
-export interface DailyForecast {
-  minTemp: number;
-  maxTemp: number;
-  Day: {
-    Icon: number;
-    IconPhrase: string;
-  };
-  timestamp: number;
-}
+import WeatherData from "../../common/weatherTypes";
 
 export interface ForecastState {
-  headline: {
-    Text: string;
-  };
-  dailyForecasts: DailyForecast[];
+  dailyForecasts: WeatherData[];
   status: "idle" | "loading" | "failed";
 }
 
 const initialState: ForecastState = {
-  headline: {
-    Text: "",
-  },
-  dailyForecasts: getStoredResponse("dailyForecasts") || [],
+  dailyForecasts: [],
   status: "idle",
 };
 
 export const fetchDailyForecastsFulfilled = createAction<{
-  Headline: { Text: string };
-  DailyForecasts: DailyForecast[];
+  DailyForecasts: WeatherData[];
 }>("forecast/dailyForecasts/fulfilled");
 
 export const fetchDailyForecasts = createAsyncThunk(
   "forecast/dailyForecasts",
   async (locationId: string, { dispatch }) => {
     try {
-        let response;
-        if (process.env.NODE_ENV === "development") {
-            await dailyForecasts(locationId);
-            response = getStoredResponse("dailyForecasts");
-        } else {
-            response = dailyForecasts(locationId);
-        }
-      
+      const response = await dailyForecasts(locationId);
       const dailyForecastsResponse = response?.DailyForecasts || [];
-      const headlineText = response?.Headline?.Text || "";
 
       const modifiedResponse = {
-        Headline: {
-          Text: headlineText,
-        },
         DailyForecasts: dailyForecastsResponse.map((forecast: any) => ({
           timestamp: new Date(forecast.Date).getTime(),
-          minTemp: forecast.Temperature.Minimum.Value,
-          maxTemp: forecast.Temperature.Maximum.Value,
-          Day: {
-            Icon: forecast.Day.Icon,
-            IconPhrase: forecast.Day.IconPhrase,
-          },
+          temparature: forecast.Temperature.Maximum.Value,
+          weatherIcon: forecast.Day.Icon,
+          weatherText: forecast.Day.IconPhrase,
         })),
       };
+
       dispatch(fetchDailyForecastsFulfilled(modifiedResponse));
-      if (process.env.NODE_ENV === "development") {
-      storeResponseLocally("dailyForecasts", modifiedResponse);
-      return getStoredResponse("dailyForecasts");;
-      } else {
-        return modifiedResponse;
-      }
+      return modifiedResponse;
+
     } catch (error) {
       throw error;
     }
@@ -94,12 +60,10 @@ const forecastSlice = createSlice({
         (
           state,
           action: PayloadAction<{
-            Headline: { Text: string };
-            DailyForecasts: DailyForecast[];
+            DailyForecasts: WeatherData[];
           }>
         ) => {
           state.status = "idle";
-          state.headline = action.payload.Headline;
           state.dailyForecasts = action.payload.DailyForecasts;
         }
       )

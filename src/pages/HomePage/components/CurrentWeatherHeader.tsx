@@ -1,82 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { useLocationDetails } from '../../../context/LocationNameContext';
-import { RootState } from '../../../state/store';
-import { useAppDispatch, useAppSelector } from '../../../state/hooks';
-import { 
-    addToFavorites, 
-    removeFromFavorites, 
-    isLocationInFavorites,
-    selectFavorites, 
-} from '../../../features/favoriteLocations/favortiesSlice';
-import { Stack, Button } from 'react-bootstrap';
+import React from 'react';
+import { useFavoritesContext } from '../../../context/FavoritesContext';
+import { useAppSelector } from '../../../state/hooks';
 import { convertToCelsius } from '../../../utils';
 import { weatherIconMapping } from '../../../common/weatherIconMapping';
+import Button from 'react-bootstrap/Button';
 
 const CurrentWeatherHeader: React.FC = () => {
     const weatherDetails = useAppSelector((state) => state.currentWeather);
-    const { locationDetails } = useLocationDetails();
-    const locationName = locationDetails.name;
-    const locationId = locationDetails.id;
-
-    const dispatch = useAppDispatch();
-    const favorites = useAppSelector((state: RootState) => state.favorites.locations);
-    const isFavoriteLocation = useAppSelector(selectFavorites).locations.some((location) => location.id === locationId);
-
-    const heartStyle = {
-        fontSize: '24px',
-        marginRight: '8px',
-    };
+    const { 
+        favorites,
+        isLocationInFavorites,
+        addToFavorites,
+        removeFromFavorites
+     } = useFavoritesContext();
 
     const handleClick = () => {
-        if (!isFavoriteLocation) {
-            dispatch(addToFavorites({ id: locationId, name: locationName }));
-          } else {
-            dispatch(removeFromFavorites(locationId));
-          }
+        if (!isLocationInFavorites(weatherDetails.id)) {
+            console.log(weatherDetails.id)
+            console.log("adding to favorites ", favorites)
+            addToFavorites({ id: weatherDetails.id, name: weatherDetails.name });
+            console.log("added to favorites ", favorites)
+        } else {
+            removeFromFavorites(weatherDetails.id);
+        }
     }
 
-    useEffect(() => {
-        console.log(favorites)
-
-    }, [handleClick])
-
     return (
-        <Stack
-            direction="horizontal"
-            gap={3}
-            className="d-flex justify-content-between"
-        >
-            <div className="p-2 d-flex">
+        <div className="d-flex justify-content-between align-items-center">
+            <div className="p-2 d-flex align-items-center">
                 <div>
                     <img
                         src={weatherIconMapping[weatherDetails.weatherIcon]}
                         alt={weatherDetails.weatherText}
                     />
                 </div>
-                <div
-                    className='location-details d-flex flex-column align-items-start'>
-                    <div>
-                        {locationName}
-                    </div>
-                    <div>
-                        {convertToCelsius(weatherDetails.temparature)}&deg;c
-                    </div>
+                <div className='location-details d-flex flex-column align-items-start ms-2'>
+                    <div>{weatherDetails.name}</div>
+                    {
+                        weatherDetails.temparature !== null && weatherDetails.temparature !== undefined ? (
+                            <div>
+                                {convertToCelsius(weatherDetails.temparature)}&deg;c
+                            </div>
+                        ) : ("")
+                    }
                 </div>
             </div>
-            <div className="p-2 d-flex">
-                <span style={heartStyle}>
-                    {isFavoriteLocation ? '♥' : '♡'}
-                </span>
+
+            <div>
                 <Button
                     variant="outline-secondary"
-                    size="sm"
-                    className=""
+                    className="position-sticky"
                     onClick={handleClick}
                 >
-                    Add to Favorites
+                    {isLocationInFavorites(weatherDetails.id) ? '♥' : '♡'}
                 </Button>
+                <div className='fav-btn mt-2'>
+                    {isLocationInFavorites(weatherDetails.id) ? 'remove from favorites' : 'add to favorites'}
+                </div>
             </div>
-        </Stack>
+
+        </div>
     );
 }
 

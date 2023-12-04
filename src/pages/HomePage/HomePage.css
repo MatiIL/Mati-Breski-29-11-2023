@@ -1,8 +1,7 @@
 .wrapper {
   position: relative;
   background: linear-gradient(to bottom, #f8f9fa, #7392b448);
-  height: 100vh;
-  overflow-y: scroll;
+  height: 95vh;
 }
 .form-floating > label {
   font-size: smaller;
@@ -10,13 +9,16 @@
 .list-group {
   position: fixed;
   margin: auto 0;
-  z-index: 1; /* Set a higher z-index to make it appear above other elements */
+  z-index: 1; 
 }
 .visible {
   display: block;
 }
 .location-details {
   font-size: smaller;
+}
+.fav-btn {
+  font-size: x-small;
 }
 @media screen and (max-width: 619px) {
   .daily-weather {

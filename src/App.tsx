@@ -1,31 +1,30 @@
-import React, { useState } from 'react';
 import './App.css';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { DarkModeProvider } from './context/DarkModeContext';
-import { LocationDetailsProvider } from './context/LocationNameContext';
-import Homepage from './pages/HomePage/Homepage';
-import Favorites from './pages/FavoritesPage/Favorites';
+import { FavoritesContextProvider } from './context/FavoritesContext';
+import HomePage from './pages/HomePage/HomePage';
+import FavoritesPage from './pages/FavoritesPage/FavoritesPage';
 import HeaderComponent from './common/HeaderComponent/HeaderComponent';
 
 const App: React.FC = () => {
 
   return (
     <DarkModeProvider>
-      <BrowserRouter>
-        <HeaderComponent />
-        <LocationDetailsProvider>
+      <FavoritesContextProvider>
+        <BrowserRouter>
+          <HeaderComponent />
           <Routes>
             <Route
               path='/'
-              element={<Homepage />}
+              element={<HomePage />}
             />
             <Route
               path='/favorites'
-              element={<Favorites />}
+              element={<FavoritesPage />}
             />
           </Routes>
-        </LocationDetailsProvider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </FavoritesContextProvider>
     </DarkModeProvider>
   );
 };

@@ -2,7 +2,7 @@
     flex-wrap: nowrap;
     justify-content: space-between;
 }
-.navbar-brand {
+.nav-link {
     font-size: smaller;
 }
 .navbar-item-text {

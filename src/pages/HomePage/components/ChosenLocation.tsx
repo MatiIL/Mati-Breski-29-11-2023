@@ -7,28 +7,23 @@ import {
 } from 'react-bootstrap';
 import { useAppSelector } from '../../../state/hooks';
 import CurrentWeatherHeader from './CurrentWeatherHeader';
-import WeatherCard from './WeatherCard';
-
+import WeatherCard from '../../../common/WeatherCard/WeatherCard';
 
 const ChosenLocation: React.FC = () => {
     const dailyForecasts = useAppSelector((state) => state.forecast.dailyForecasts);
-    const currentWeather = useAppSelector((state) => state.currentWeather.weatherText);
-
-    // useEffect(() => {
-    //     console.log(dailyForecasts)
-    // }, [dailyForecasts])
+    const currentWeatherFromApi = useAppSelector((state) => state.currentWeather);
 
     return (
-        currentWeather && dailyForecasts ? (
-            <div className="align-self-center w-75 mt-3">
+        currentWeatherFromApi && dailyForecasts ? (
+            <div className="align-self-center w-75 mt-4">
                 <Card className="text-center">
                     <Card.Header>
-                        <CurrentWeatherHeader />
+                        <CurrentWeatherHeader/>
                     </Card.Header>
                     <Card.Body>
                         <Card.Title
                             className='fs-3 m-5'
-                        >{currentWeather}</Card.Title>
+                        >{currentWeatherFromApi.weatherText}</Card.Title>
                         <Container>
                             <Row>
                                 {dailyForecasts.length && dailyForecasts.map((day) => (
@@ -37,7 +32,7 @@ const ChosenLocation: React.FC = () => {
                                     key={day.timestamp}
                                     sm={true}
                                     >
-                                        <WeatherCard dailyData={day} />
+                                        <WeatherCard data={day} />
                                     </Col>
                                 ))}
                             </Row>
