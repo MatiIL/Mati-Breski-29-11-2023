@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { RootState } from "../../state/store";
-import { getCurrentWeather } from '../../api/weatherApi';
+import { getCurrentWeather } from "../../api/weatherApi";
 import WeatherData from "../../common/weatherTypes";
 
 export interface LocationWithWeather {
@@ -27,7 +27,7 @@ export const isLocationInFavorites = (state: RootState, locationId: string) => {
 export const fetchCurrentWeatherForFavorites = createAsyncThunk<
   LocationWithWeather[],
   { ids: string[]; names: string[] }
->('favorites/fetchCurrentWeatherForFavorites', async ({ ids, names }) => {
+>("favorites/fetchCurrentWeatherForFavorites", async ({ ids, names }) => {
   try {
     const locations: LocationWithWeather[] = [];
 
@@ -57,7 +57,6 @@ export const fetchCurrentWeatherForFavorites = createAsyncThunk<
   }
 });
 
-
 const favoritesSlice = createSlice({
   name: "favorites",
   initialState,
@@ -66,9 +65,9 @@ const favoritesSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; name: string }>
     ) => {
-      console.log('Adding to favorites:', action.payload);
+      console.log("Adding to favorites:", action.payload);
       state.locations.push({ ...action.payload, currentWeather: null });
-      console.log('New state:', state.locations);
+      console.log("New state:", state.locations);
     },
     removeFromFavorites: (state, action: PayloadAction<string>) => {
       state.locations = state.locations.filter(
@@ -77,13 +76,14 @@ const favoritesSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchCurrentWeatherForFavorites.fulfilled, (state, action) => {
+    builder.addCase(
+      fetchCurrentWeatherForFavorites.fulfilled,
+      (state, action) => {
         state.locations = action.payload;
-      });
+      }
+    );
   },
 });
 
 export const { addToFavorites, removeFromFavorites } = favoritesSlice.actions;
-
 export default favoritesSlice.reducer;

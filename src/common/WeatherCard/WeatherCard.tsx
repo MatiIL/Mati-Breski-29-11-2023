@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useUserGestureContext } from '../../context/UserGestureContext';
 import { useTempUnitContext } from '../../context/TempUnitContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import WeatherData from '../weatherTypes';
@@ -28,6 +29,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ data, name, id }) => {
     const dispatch: AppDispatch = useAppDispatch();
     const navigate = useNavigate();
     const { isFahrenheit } = useTempUnitContext();
+    const { setUserGesture } = useUserGestureContext();
 
     const getDayAbbreviation = (data: number): string => {
         const date = new Date(data);
@@ -45,6 +47,7 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ data, name, id }) => {
         weatherText: string
     ) => {
         if (id !== undefined && name !== undefined) {
+            setUserGesture(false);
             try {
                 dispatch(
                     setCurrentWeather({
@@ -68,7 +71,6 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ data, name, id }) => {
     };
 
     useEffect(() => {
-        console.log('changed temparature unit');
     }, [isFahrenheit])
 
     return (

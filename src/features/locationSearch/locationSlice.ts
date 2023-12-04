@@ -1,6 +1,5 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../../state/store';
-import { autocompleteSearch } from '../../api/weatherApi';
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { autocompleteSearch } from "../../api/weatherApi";
 
 export interface Location {
   Key: string;
@@ -12,16 +11,16 @@ export interface Location {
 
 export interface LocationState {
   locations: Location[];
-  status: 'idle' | 'loading' | 'failed';
+  status: "idle" | "loading" | "failed";
 }
 
 const initialState: LocationState = {
   locations: [],
-  status: 'idle',
+  status: "idle",
 };
 
 export const fetchLocations = createAsyncThunk(
-  'location/autocompleteSearch',
+  "location/autocompleteSearch",
   async (query: string) => {
     try {
       const response = await autocompleteSearch(query);
@@ -39,32 +38,29 @@ export const fetchLocations = createAsyncThunk(
   }
 );
 
-export const queryUpdated = (text: string) => {
-  return async (dispatch: any, getState: () => RootState) => {
-    dispatch(fetchLocations(text));
-  };
-};
-
 const locationSlice = createSlice({
-  name: 'location',
+  name: "location",
   initialState,
   reducers: {
     resetSearchState: (state) => {
       state.locations = [];
-      state.status = 'idle';
+      state.status = "idle";
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchLocations.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
       })
-      .addCase(fetchLocations.fulfilled, (state, action: PayloadAction<Location[]>) => {
-        state.status = 'idle';
-        state.locations = action.payload;
-      })
+      .addCase(
+        fetchLocations.fulfilled,
+        (state, action: PayloadAction<Location[]>) => {
+          state.status = "idle";
+          state.locations = action.payload;
+        }
+      )
       .addCase(fetchLocations.rejected, (state) => {
-        state.status = 'failed';
+        state.status = "failed";
       });
   },
 });

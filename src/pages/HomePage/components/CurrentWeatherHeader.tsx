@@ -24,7 +24,6 @@ const CurrentWeatherHeader: React.FC = () => {
     }
 
     useEffect(() => {
-        console.log('changed temparature unit');
     }, [isFahrenheit])
 
     return (

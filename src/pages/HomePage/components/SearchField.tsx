@@ -7,26 +7,22 @@ import React, {
 import { useUserGestureContext } from '../../../context/UserGestureContext';
 import { AppDispatch } from '../../../state/store';
 import { useAppDispatch, useAppSelector } from '../../../state/hooks';
-import { fetchLocations, queryUpdated } from '../../../features/locationSearch/locationSlice';
-import { fetchDailyForecasts, fetchDailyForecastsFulfilled } from '../../../features/dailyForecast/forecastSlice';
+import { fetchLocations } from '../../../features/locationSearch/locationSlice';
+import { fetchDailyForecasts } from '../../../features/dailyForecast/forecastSlice';
 import { fetchCurrentWeather } from '../../../features/currentWeather/currentSlice';
 import { Form, FloatingLabel } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 const SearchField: React.FC = () => {
   const dispatch: AppDispatch = useAppDispatch();
   const searchResults = useAppSelector((state) => state.location.locations);
-  const debounceTime = 300; // Adjust the debounce time as needed
   const [isDropdownVisible, setDropdownVisible] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
-  const [userInteraction, setUserInteraction] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLUListElement>(null);
   const { setUserGesture } = useUserGestureContext();
 
   const handleTyping = async (e: ChangeEvent<HTMLInputElement>) => {
-    setUserInteraction(true);
     const enteredValue = e.target.value;
     const isEnglishInput = /^[a-zA-Z\s]*$/.test(enteredValue);
 
@@ -34,11 +30,11 @@ const SearchField: React.FC = () => {
       setInputValue('');
       toast.error('Please use only English letters.', {
         position: toast.POSITION.TOP_CENTER,
-        autoClose: 2000, 
+        autoClose: 2000,
         toastId: 'englishInputError',
       });
     } else {
-      
+
       setInputValue(enteredValue);
       try {
         await dispatch(fetchLocations(enteredValue));
@@ -47,7 +43,7 @@ const SearchField: React.FC = () => {
         console.error('fetchLocations rejected:', error);
         toast.error('Sorry, something gone wrong with the weather API.', {
           position: toast.POSITION.TOP_CENTER,
-          autoClose: 2000, 
+          autoClose: 2000,
           toastId: 'failedAutocomplete',
         });
       }
@@ -82,7 +78,7 @@ const SearchField: React.FC = () => {
     setDropdownVisible(false);
     dispatch({ type: 'location/resetSearchState' });
   };
-  
+
   const handleDocumentClick = (e: MouseEvent) => {
     if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
       setDropdownVisible(false);
@@ -120,14 +116,14 @@ const SearchField: React.FC = () => {
           <ul
             ref={dropdownRef}
             className={`list-group list-group-flush ${isDropdownVisible ? 'visible' : ''}`}
-            >
+          >
             {searchResults.length && searchResults.map((location) => (
               <a
                 href="#"
                 key={location.Key}
                 className='list-group-item list-group-item-action'
                 onClick={(e: React.MouseEvent<HTMLAnchorElement>) =>
-                    handleClick(e, location.Key, location.LocalizedName)}
+                  handleClick(e, location.Key, location.LocalizedName)}
               >
                 {location.LocalizedName}, {location.Country.LocalizedName}
               </a>

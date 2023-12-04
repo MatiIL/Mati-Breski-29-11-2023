@@ -39,7 +39,6 @@ export const fetchDailyForecasts = createAsyncThunk(
 
       dispatch(fetchDailyForecastsFulfilled(modifiedResponse));
       return modifiedResponse;
-
     } catch (error) {
       throw error;
     }
