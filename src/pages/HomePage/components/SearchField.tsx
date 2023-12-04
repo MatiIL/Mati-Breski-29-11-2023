@@ -4,6 +4,7 @@ import React, {
   useRef,
   ChangeEvent
 } from 'react';
+import { useUserGestureContext } from '../../../context/UserGestureContext';
 import { AppDispatch } from '../../../state/store';
 import { useAppDispatch, useAppSelector } from '../../../state/hooks';
 import { fetchLocations, queryUpdated } from '../../../features/locationSearch/locationSlice';
@@ -18,11 +19,14 @@ const SearchField: React.FC = () => {
   const dispatch: AppDispatch = useAppDispatch();
   const searchResults = useAppSelector((state) => state.location.locations);
   const debounceTime = 300; // Adjust the debounce time as needed
-  const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [isDropdownVisible, setDropdownVisible] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>('');
+  const [userInteraction, setUserInteraction] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLUListElement>(null);
+  const { setUserGesture } = useUserGestureContext();
 
   const handleTyping = async (e: ChangeEvent<HTMLInputElement>) => {
+    setUserInteraction(true);
     const enteredValue = e.target.value;
     const isEnglishInput = /^[a-zA-Z\s]*$/.test(enteredValue);
 
@@ -34,9 +38,10 @@ const SearchField: React.FC = () => {
         toastId: 'englishInputError',
       });
     } else {
+      
       setInputValue(enteredValue);
       try {
-        await dispatch(fetchLocations(inputValue));
+        await dispatch(fetchLocations(enteredValue));
         setDropdownVisible(true);
       } catch (error) {
         console.error('fetchLocations rejected:', error);
@@ -104,6 +109,7 @@ const SearchField: React.FC = () => {
             placeholder='type desired location'
             autoComplete="off"
             value={inputValue}
+            onClick={() => setUserGesture(true)}
             onChange={(e: ChangeEvent<HTMLInputElement>) => handleTyping(e)}
           />
           <ToastContainer />

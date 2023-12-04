@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../state/store';
 import { autocompleteSearch } from '../../api/weatherApi';
 
-interface Location {
+export interface Location {
   Key: string;
   LocalizedName: string;
   Country: {
