@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { fetchCurrentWeather } from '../../../features/currentWeather/currentSlice';
 import { fetchDailyForecasts } from '../../../features/dailyForecast/forecastSlice';
+import { fetchGeoposition } from '../../../features/geopositionSearch/geopositionSlice';
 import {
     Card,
     Container,
@@ -13,42 +14,50 @@ import CurrentWeatherHeader from './CurrentWeatherHeader';
 import WeatherCard from '../../../common/WeatherCard/WeatherCard';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useUserGestureContext } from '../../../context/UserGestureContext';
 
 const ChosenLocation: React.FC = () => {
     const dispatch: AppDispatch = useAppDispatch();
     const dailyForecasts = useAppSelector((state) => state.forecast.dailyForecasts);
     const currentWeatherFromApi = useAppSelector((state) => state.currentWeather);
-    const defaultLocation = 'Tel Aviv'
-    const tlvKey = '215854';
+    const locationDetails = useAppSelector((state) => state.geoposition.location);
+    const { userGesture } = useUserGestureContext();
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await dispatch(fetchCurrentWeather({ locationId: tlvKey, name: defaultLocation }));
-            } catch (error) {
-                console.error('Failed to fetch current weather:', error);
-                toast.error(`Failed to fetch current weather for ${defaultLocation}.`, {
-                    position: toast.POSITION.TOP_CENTER,
-                    autoClose: 2000,
-                    toastId: 'failedCurrentWeatherLoad',
+        if (userGesture) {
+            const fetchLocationDetails = async () => {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    if (latitude && longitude) {
+                        await dispatch(fetchGeoposition({ lat: latitude.toString(), lon: longitude.toString() }));
+                    }
                 });
             }
-            try {
-                await dispatch(fetchDailyForecasts(tlvKey));
-            } catch (error) {
-                console.error('Failed to fetch daily forecasts:', error);
-                toast.error(`Failed to fetch daily forecasts for ${defaultLocation}.`, {
-                    position: toast.POSITION.TOP_CENTER,
-                    autoClose: 2000,
-                    toastId: 'failedDailyForecastsLoad',
-                });
-            }
-        };
-
-        if (!dailyForecasts.length) {
-            fetchData();
+            fetchLocationDetails();
         }
-    }, [dispatch, tlvKey, dailyForecasts]);
+
+    }, [userGesture, dispatch]);
+
+    useEffect(() => {
+        if (locationDetails) {
+            const fetchUserLocationData = async () => {
+                try {
+                    await dispatch(fetchCurrentWeather({ locationId: locationDetails.id, name: locationDetails.name }));
+                    await dispatch(fetchDailyForecasts(locationDetails.id));
+                } catch (error) {
+                    console.error('Failed to fetch current weather:', error);
+                    toast.error(`Failed to fetch current weather for ${locationDetails.name}.`, {
+                        position: toast.POSITION.TOP_CENTER,
+                        autoClose: 2000,
+                        toastId: 'failedCurrentWeatherLoad',
+                    });
+                }
+            }
+            fetchUserLocationData();
+        }
+
+    }, [locationDetails, dispatch])
 
     return (
         <>
@@ -82,7 +91,6 @@ const ChosenLocation: React.FC = () => {
             ) : <></>}
         </>
     );
-
 }
 
 export default ChosenLocation;
