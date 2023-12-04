@@ -1,17 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFavoritesContext } from '../../../context/FavoritesContext';
+import { useTempUnitContext } from '../../../context/TempUnitContext';
 import { useAppSelector } from '../../../state/hooks';
 import { convertToCelsius } from '../../../utils';
 import { weatherIconMapping } from '../../../common/weatherIconMapping';
-import Button from 'react-bootstrap/Button';
+import { Button } from 'react-bootstrap';
 
 const CurrentWeatherHeader: React.FC = () => {
     const weatherDetails = useAppSelector((state) => state.currentWeather);
-    const { 
+    const {
         isLocationInFavorites,
         addToFavorites,
         removeFromFavorites
-     } = useFavoritesContext();
+    } = useFavoritesContext();
+    const { isFahrenheit } = useTempUnitContext();
 
     const handleClick = () => {
         if (!isLocationInFavorites(weatherDetails.id)) {
@@ -20,6 +22,10 @@ const CurrentWeatherHeader: React.FC = () => {
             removeFromFavorites(weatherDetails.id);
         }
     }
+
+    useEffect(() => {
+        console.log('changed temparature unit');
+    }, [isFahrenheit])
 
     return (
         <div className="d-flex justify-content-between align-items-center">
@@ -35,11 +41,15 @@ const CurrentWeatherHeader: React.FC = () => {
                     {
                         weatherDetails.temparature !== null && weatherDetails.temparature !== undefined ? (
                             <div>
-                                {convertToCelsius(weatherDetails.temparature)}&deg;c
+                                {isFahrenheit
+                                    ? `${weatherDetails.temparature}°F`
+                                    : `${convertToCelsius(weatherDetails.temparature)}°C`
+                                }
                             </div>
                         ) : ("")
                     }
                 </div>
+
             </div>
 
             <div>
