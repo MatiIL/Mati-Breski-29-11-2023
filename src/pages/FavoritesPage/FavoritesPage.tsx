@@ -5,7 +5,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import './FavoritesPage.css';
 
 const FavoritesPage: React.FC = () => {
-    const favoritesWeatherData = useAppSelector((state) => state.favorites.locations);
+    const favoriteLocationsWeather = useAppSelector((state) => state.favorites.locationsWeather);
 
     return (
         <div className='fav-wrapper d-flex flex-column align-items-center'>
@@ -14,11 +14,11 @@ const FavoritesPage: React.FC = () => {
                 </h1>
             <Container className='mt-3'>
                 <Row>
-                    {favoritesWeatherData.map((favorite) => (
+                    {favoriteLocationsWeather.map((favorite) => (
                         <Col xxl={1} xl={2} lg={3} md={4} sm={3} xs={6}
                         className='mb-3'
                         key={favorite.id}>
-                            {favorite.currentWeather && (
+                            {favorite.currentWeather !== undefined && (
                                 <WeatherCard 
                                 data={favorite.currentWeather} 
                                 name={favorite.name}

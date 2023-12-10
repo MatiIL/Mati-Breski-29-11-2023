@@ -1,7 +1,6 @@
 import './App.css';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { TempUnitProvider } from './context/TempUnitContext';
-import { FavoritesContextProvider } from './context/FavoritesContext';
 import { UserGestureProvider} from './context/UserGestureContext';
 import HomePage from './pages/HomePage/Homepage';
 import FavoritesPage from './pages/FavoritesPage/FavoritesPage';
@@ -12,7 +11,6 @@ const App: React.FC = () => {
   return (
     <UserGestureProvider>
       <TempUnitProvider>
-        <FavoritesContextProvider>
           <BrowserRouter>
             <HeaderComponent />
             <Routes>
@@ -26,7 +24,6 @@ const App: React.FC = () => {
               />
             </Routes>
           </BrowserRouter>
-        </FavoritesContextProvider>
       </TempUnitProvider>
     </UserGestureProvider>
   );
