@@ -11,22 +11,23 @@ const FavoritesPage: React.FC = () => {
         <div className='fav-wrapper d-flex flex-column align-items-center'>
             <h1 className='fs-4 mt-2'>
                 Your Favorite Locations
-                </h1>
+            </h1>
             <Container className='mt-3'>
                 <Row>
-                    {favoriteLocationsWeather.map((favorite) => (
-                        <Col xxl={1} xl={2} lg={3} md={4} sm={3} xs={6}
-                        className='mb-3'
-                        key={favorite.id}>
-                            {favorite.currentWeather !== undefined && (
-                                <WeatherCard 
-                                data={favorite.currentWeather} 
-                                name={favorite.name}
-                                id={favorite.id}
-                                />
-                            )}
-                        </Col>
-                    ))}
+                    {favoriteLocationsWeather !== undefined &&
+                        favoriteLocationsWeather.map((favorite) => (
+                            <Col xxl={1} xl={2} lg={3} md={4} sm={3} xs={6}
+                                className='mb-3'
+                                key={favorite.id}>
+                                {favorite.currentWeather !== undefined && (
+                                    <WeatherCard
+                                        data={favorite.currentWeather}
+                                        name={favorite.name}
+                                        id={favorite.id}
+                                    />
+                                )}
+                            </Col>
+                        ))}
                 </Row>
             </Container>
         </div>

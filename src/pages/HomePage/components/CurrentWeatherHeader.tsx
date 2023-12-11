@@ -22,9 +22,6 @@ const CurrentWeatherHeader: React.FC = () => {
         }
     }
 
-    useEffect(() => {
-    }, [isFahrenheit])
-
     return (
         <div className="d-flex justify-content-between align-items-center">
             <div className="p-2 d-flex align-items-center">

@@ -7,20 +7,19 @@ export interface Location {
   name: string;
 }
 
-export interface LocationWithWeather {
-  id: string;
-  name: string;
+export interface LocationWithWeather extends Location {
   currentWeather?: WeatherData | undefined;
 }
 
 export interface FavoritesState {
   locations: Location[];
-  locationsWeather: LocationWithWeather[];
+  locationsWeather?: LocationWithWeather[];
+  status: "idle" | "loading" | "failed";
 }
 
 const initialState: FavoritesState = {
   locations: [],
-  locationsWeather: [],
+  status: "idle",
 };
 
 export const isLocationInFavorites = (locationId: string, favorites: FavoritesState) => {
@@ -78,12 +77,20 @@ const favoritesSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(
+    builder.
+    addCase(fetchCurrentWeatherForFavorites.pending, (state) => {
+      state.status = "loading";
+    })
+    .addCase(
       fetchCurrentWeatherForFavorites.fulfilled,
       (state, action) => {
         state.locationsWeather = action.payload;
+        state.status = "idle";
       }
-    );
+    )
+    .addCase(fetchCurrentWeatherForFavorites.rejected, (state => {
+      state.status = "failed";
+    }))
   },
   
 });
