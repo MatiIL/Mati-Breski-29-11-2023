@@ -36,7 +36,7 @@ const SearchField: React.FC = () => {
           toastId: 'failedAutocomplete',
         });
       }
-    }, 1000) 
+    }, 1000)
   ).current;
 
   const handleTyping = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -59,8 +59,11 @@ const SearchField: React.FC = () => {
   const handleClick = async (
     e: React.MouseEvent<HTMLAnchorElement>,
     key: string,
-    name: string
+    name: string,
+    country: string,
   ) => {
+    const clickedLocation = `${name}, ${country}`
+    setInputValue(clickedLocation);
     try {
       await dispatch(fetchCurrentWeather({ locationId: key, name }));
     } catch (error) {
@@ -121,7 +124,13 @@ const SearchField: React.FC = () => {
         <div>
           <ul
             ref={dropdownRef}
-            className={`list-group list-group-flush ${isDropdownVisible ? 'visible' : ''}`}
+            className={
+              `list-group list-group-flush 
+              ${isDropdownVisible &&
+                searchResults.length > 0 &&
+                dropdownRef.current !== null ?
+                'visible' : 'd-none'}`
+            }
           >
             {searchResults.length && searchResults.map((location) => (
               <a
@@ -129,9 +138,13 @@ const SearchField: React.FC = () => {
                 key={location.Key}
                 className='list-group-item list-group-item-action'
                 onClick={(e: React.MouseEvent<HTMLAnchorElement>) =>
-                  handleClick(e, location.Key, location.LocalizedName)}
+                  handleClick(e, location.Key, location.LocalizedName, location.Country.LocalizedName)}
               >
-                {location.LocalizedName}, {location.Country.LocalizedName}
+                {
+                  location.LocalizedName !== "" ? location.LocalizedName : ""
+                }, {
+                  location.Country.LocalizedName !== "" ? location.Country.LocalizedName : ""
+                }
               </a>
             ))}
           </ul>
