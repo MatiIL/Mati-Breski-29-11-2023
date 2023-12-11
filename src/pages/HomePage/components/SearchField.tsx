@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../../state/hooks';
 import { fetchLocations } from '../../../features/locationSearch/locationSlice';
 import { fetchDailyForecasts } from '../../../features/dailyForecast/forecastSlice';
 import { fetchCurrentWeather } from '../../../features/currentWeather/currentSlice';
+import { debounce } from '../../../utils';
 import { Form, FloatingLabel } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -21,6 +22,22 @@ const SearchField: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>('');
   const dropdownRef = useRef<HTMLUListElement>(null);
   const { setUserGesture } = useUserGestureContext();
+
+  const debouncedFetchLocations = useRef(
+    debounce(async (value: string) => {
+      try {
+        await dispatch(fetchLocations(value));
+        setDropdownVisible(true);
+      } catch (error) {
+        console.error('fetchLocations rejected:', error);
+        toast.error('Sorry, something gone wrong with the weather API.', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 2000,
+          toastId: 'failedAutocomplete',
+        });
+      }
+    }, 1000) 
+  ).current;
 
   const handleTyping = async (e: ChangeEvent<HTMLInputElement>) => {
     const enteredValue = e.target.value;
@@ -34,19 +51,8 @@ const SearchField: React.FC = () => {
         toastId: 'englishInputError',
       });
     } else {
-
       setInputValue(enteredValue);
-      try {
-        await dispatch(fetchLocations(enteredValue));
-        setDropdownVisible(true);
-      } catch (error) {
-        console.error('fetchLocations rejected:', error);
-        toast.error('Sorry, something gone wrong with the weather API.', {
-          position: toast.POSITION.TOP_CENTER,
-          autoClose: 2000,
-          toastId: 'failedAutocomplete',
-        });
-      }
+      debouncedFetchLocations(enteredValue);
     }
   };
 

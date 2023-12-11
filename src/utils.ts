@@ -17,4 +17,15 @@ export const handleApiResponse = async (url: string): Promise<any> => {
 export const convertToCelsius = (val: number): number => {
   const celsiusValue = (val - 32) * (5/9);
   return Math.round(celsiusValue);
-}
+};
+
+export const debounce = <T extends (...args: any[]) => any>(
+  func: T,
+  delay: number
+) => {
+  let timeoutId: NodeJS.Timeout;
+  return function (...args: Parameters<T>) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
