@@ -17,10 +17,6 @@ const initialState: ForecastState = {
   status: "idle",
 };
 
-export const fetchDailyForecastsFulfilled = createAction<{
-  DailyForecasts: WeatherData[];
-}>("forecast/dailyForecasts/fulfilled");
-
 export const fetchDailyForecasts = createAsyncThunk(
   "forecast/dailyForecasts",
   async (locationId: string, { dispatch }) => {
@@ -36,8 +32,7 @@ export const fetchDailyForecasts = createAsyncThunk(
           weatherText: forecast.Day.IconPhrase,
         })),
       };
-
-      dispatch(fetchDailyForecastsFulfilled(modifiedResponse));
+      
       return modifiedResponse;
     } catch (error) {
       throw error;
