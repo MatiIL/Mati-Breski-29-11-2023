@@ -65,7 +65,7 @@ const ChosenLocation: React.FC = () => {
     return (
         <>
             <ToastContainer />
-            {currentWeatherFromApi && dailyForecasts.length ? (
+            {currentWeatherFromApi ? (
                 <div className="align-self-center w-75 mt-4">
                     <Card className="text-center">
                         <Card.Header>
