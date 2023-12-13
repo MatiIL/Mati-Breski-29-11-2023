@@ -91,6 +91,7 @@ const SearchField: React.FC = () => {
   const handleDocumentClick = (e: MouseEvent) => {
     if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
       setDropdownVisible(false);
+      setInputValue('');
     }
   };
 
