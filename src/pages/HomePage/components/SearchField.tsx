@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../../state/hooks';
 import { fetchLocations } from '../../../features/locationSearch/locationSlice';
 import { fetchDailyForecasts } from '../../../features/dailyForecast/forecastSlice';
 import { fetchCurrentWeather } from '../../../features/currentWeather/currentSlice';
+import { debounce } from '../../../utils';
 import { Form, FloatingLabel } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -21,6 +22,22 @@ const SearchField: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>('');
   const dropdownRef = useRef<HTMLUListElement>(null);
   const { setUserGesture } = useUserGestureContext();
+
+  const debouncedFetchLocations = useRef(
+    debounce(async (value: string) => {
+      try {
+        await dispatch(fetchLocations(value));
+        setDropdownVisible(true);
+      } catch (error) {
+        console.error('fetchLocations rejected:', error);
+        toast.error('Sorry, something gone wrong with the weather API.', {
+          position: toast.POSITION.TOP_CENTER,
+          autoClose: 2000,
+          toastId: 'failedAutocomplete',
+        });
+      }
+    }, 1000)
+  ).current;
 
   const handleTyping = async (e: ChangeEvent<HTMLInputElement>) => {
     const enteredValue = e.target.value;
@@ -34,27 +51,19 @@ const SearchField: React.FC = () => {
         toastId: 'englishInputError',
       });
     } else {
-
       setInputValue(enteredValue);
-      try {
-        await dispatch(fetchLocations(enteredValue));
-        setDropdownVisible(true);
-      } catch (error) {
-        console.error('fetchLocations rejected:', error);
-        toast.error('Sorry, something gone wrong with the weather API.', {
-          position: toast.POSITION.TOP_CENTER,
-          autoClose: 2000,
-          toastId: 'failedAutocomplete',
-        });
-      }
+      debouncedFetchLocations(enteredValue);
     }
   };
 
   const handleClick = async (
     e: React.MouseEvent<HTMLAnchorElement>,
     key: string,
-    name: string
+    name: string,
+    country: string,
   ) => {
+    const clickedLocation = `${name}, ${country}`
+    setInputValue(clickedLocation);
     try {
       await dispatch(fetchCurrentWeather({ locationId: key, name }));
     } catch (error) {
@@ -82,6 +91,7 @@ const SearchField: React.FC = () => {
   const handleDocumentClick = (e: MouseEvent) => {
     if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
       setDropdownVisible(false);
+      setInputValue('');
     }
   };
 
@@ -115,7 +125,13 @@ const SearchField: React.FC = () => {
         <div>
           <ul
             ref={dropdownRef}
-            className={`list-group list-group-flush ${isDropdownVisible ? 'visible' : ''}`}
+            className={
+              `list-group list-group-flush 
+              ${isDropdownVisible &&
+                searchResults.length > 0 &&
+                dropdownRef.current !== null ?
+                'visible' : 'd-none'}`
+            }
           >
             {searchResults.length && searchResults.map((location) => (
               <a
@@ -123,9 +139,13 @@ const SearchField: React.FC = () => {
                 key={location.Key}
                 className='list-group-item list-group-item-action'
                 onClick={(e: React.MouseEvent<HTMLAnchorElement>) =>
-                  handleClick(e, location.Key, location.LocalizedName)}
+                  handleClick(e, location.Key, location.LocalizedName, location.Country.LocalizedName)}
               >
-                {location.LocalizedName}, {location.Country.LocalizedName}
+                {
+                  location.LocalizedName !== "" ? location.LocalizedName : ""
+                }, {
+                  location.Country.LocalizedName !== "" ? location.Country.LocalizedName : ""
+                }
               </a>
             ))}
           </ul>

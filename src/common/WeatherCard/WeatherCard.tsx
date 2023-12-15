@@ -31,8 +31,8 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ data, name, id }) => {
     const { isFahrenheit } = useTempUnitContext();
     const { setUserGesture } = useUserGestureContext();
 
-    const getDayAbbreviation = (data: number): string => {
-        const date = new Date(data);
+    const getDayAbbreviation = (timestamp: number): string => {
+        const date = new Date(timestamp);
         const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
         const abbreviatedDay = dayOfWeek.slice(0, 3);
         return abbreviatedDay;
@@ -69,9 +69,6 @@ const WeatherCard: React.FC<WeatherCardProps> = ({ data, name, id }) => {
             }
         }
     };
-
-    useEffect(() => {
-    }, [isFahrenheit])
 
     return (
         <>

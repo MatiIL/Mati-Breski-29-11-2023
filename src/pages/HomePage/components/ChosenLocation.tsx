@@ -25,7 +25,7 @@ const ChosenLocation: React.FC = () => {
     const { userGesture } = useUserGestureContext();
 
     useEffect(() => {
-        if (userGesture) {
+        if (userGesture && !locationDetails) {
             const fetchLocationDetails = async () => {
                 navigator.geolocation.getCurrentPosition(async (position) => {
                     const latitude = position.coords.latitude;
@@ -36,8 +36,6 @@ const ChosenLocation: React.FC = () => {
                 });
             }
             fetchLocationDetails();
-        } else {
-
         }
 
     }, [userGesture, dispatch]);

@@ -1,27 +1,29 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { RootState } from "../../state/store";
 import { getCurrentWeather } from "../../api/weatherApi";
 import WeatherData from "../../common/weatherTypes";
 
-export interface LocationWithWeather {
+export interface Location {
   id: string;
   name: string;
-  currentWeather?: WeatherData | null;
+}
+
+export interface LocationWithWeather extends Location {
+  currentWeather?: WeatherData | undefined;
 }
 
 export interface FavoritesState {
-  locations: LocationWithWeather[];
+  locations: Location[];
+  locationsWeather?: LocationWithWeather[];
+  status: "idle" | "loading" | "failed";
 }
 
 const initialState: FavoritesState = {
   locations: [],
+  status: "idle",
 };
 
-export const selectFavorites = (state: RootState) => state.favorites;
-
-export const isLocationInFavorites = (state: RootState, locationId: string) => {
-  const favorites = selectFavorites(state).locations;
-  return favorites.some((location) => location.id === locationId);
+export const isLocationInFavorites = (locationId: string, favorites: FavoritesState) => {
+  return favorites.locations.some((location) => location.id === locationId);
 };
 
 export const fetchCurrentWeatherForFavorites = createAsyncThunk<
@@ -29,7 +31,7 @@ export const fetchCurrentWeatherForFavorites = createAsyncThunk<
   { ids: string[]; names: string[] }
 >("favorites/fetchCurrentWeatherForFavorites", async ({ ids, names }) => {
   try {
-    const locations: LocationWithWeather[] = [];
+    const locationsWeather: LocationWithWeather[] = [];
 
     for (let i = 0; i < ids.length; i++) {
       const id = ids[i];
@@ -47,15 +49,16 @@ export const fetchCurrentWeatherForFavorites = createAsyncThunk<
           temparature: temperatureValue,
         };
 
-        locations.push({ id, name, currentWeather });
+        locationsWeather.push({ id, name, currentWeather });
       }
     }
 
-    return locations;
+    return locationsWeather;
   } catch (error) {
     throw error;
   }
 });
+
 
 const favoritesSlice = createSlice({
   name: "favorites",
@@ -65,9 +68,7 @@ const favoritesSlice = createSlice({
       state,
       action: PayloadAction<{ id: string; name: string }>
     ) => {
-      console.log("Adding to favorites:", action.payload);
-      state.locations.push({ ...action.payload, currentWeather: null });
-      console.log("New state:", state.locations);
+      state.locations.push({ ...action.payload });
     },
     removeFromFavorites: (state, action: PayloadAction<string>) => {
       state.locations = state.locations.filter(
@@ -76,13 +77,22 @@ const favoritesSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(
+    builder.
+    addCase(fetchCurrentWeatherForFavorites.pending, (state) => {
+      state.status = "loading";
+    })
+    .addCase(
       fetchCurrentWeatherForFavorites.fulfilled,
       (state, action) => {
-        state.locations = action.payload;
+        state.locationsWeather = action.payload;
+        state.status = "idle";
       }
-    );
+    )
+    .addCase(fetchCurrentWeatherForFavorites.rejected, (state => {
+      state.status = "failed";
+    }))
   },
+  
 });
 
 export const { addToFavorites, removeFromFavorites } = favoritesSlice.actions;

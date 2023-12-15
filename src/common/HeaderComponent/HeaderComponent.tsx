@@ -1,18 +1,17 @@
 import React from 'react';
-import { useFavoritesContext } from '../../context/FavoritesContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Navbar, Form } from 'react-bootstrap';
 import './HeaderComponent.css';
 import { useTempUnitContext } from '../../context/TempUnitContext';
 import { AppDispatch } from '../../state/store';
-import { useAppDispatch } from '../../state/hooks';
+import { useAppDispatch, useAppSelector } from '../../state/hooks';
 import { fetchCurrentWeatherForFavorites } from '../../features/favoriteLocations/favortiesSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const HeaderComponent: React.FC = () => {
   const dispatch: AppDispatch = useAppDispatch();
-  const { favorites } = useFavoritesContext();
+  const favorites = useAppSelector((state) => state.favorites.locations);
   const { isFahrenheit, setIsFahrenheit } = useTempUnitContext();
   const navigate = useNavigate();
 

@@ -1,30 +1,26 @@
 import React, { useEffect } from 'react';
-import { useFavoritesContext } from '../../../context/FavoritesContext';
 import { useTempUnitContext } from '../../../context/TempUnitContext';
-import { useAppSelector } from '../../../state/hooks';
+import { useAppSelector, useAppDispatch } from '../../../state/hooks';
 import { convertToCelsius } from '../../../utils';
 import { weatherIconMapping } from '../../../common/weatherIconMapping';
 import { Button } from 'react-bootstrap';
+import { addToFavorites, removeFromFavorites, isLocationInFavorites } from '../../../features/favoriteLocations/favortiesSlice';
 
 const CurrentWeatherHeader: React.FC = () => {
     const weatherDetails = useAppSelector((state) => state.currentWeather);
-    const {
-        isLocationInFavorites,
-        addToFavorites,
-        removeFromFavorites
-    } = useFavoritesContext();
+    const favorites = useAppSelector((state) => state.favorites);
+    const isFav = isLocationInFavorites(weatherDetails.id, favorites);
+
+    const dispatch = useAppDispatch();
     const { isFahrenheit } = useTempUnitContext();
 
     const handleClick = () => {
-        if (!isLocationInFavorites(weatherDetails.id)) {
-            addToFavorites({ id: weatherDetails.id, name: weatherDetails.name });
+        if (!isFav) {
+            dispatch(addToFavorites({ id: weatherDetails.id, name: weatherDetails.name }));
         } else {
-            removeFromFavorites(weatherDetails.id);
+            dispatch(removeFromFavorites(weatherDetails.id));
         }
     }
-
-    useEffect(() => {
-    }, [isFahrenheit])
 
     return (
         <div className="d-flex justify-content-between align-items-center">
@@ -57,10 +53,10 @@ const CurrentWeatherHeader: React.FC = () => {
                     className="position-sticky"
                     onClick={handleClick}
                 >
-                    {isLocationInFavorites(weatherDetails.id) ? '♥' : '♡'}
+                    {isFav ? '♥' : '♡'}
                 </Button>
                 <div className='fav-btn mt-2'>
-                    {isLocationInFavorites(weatherDetails.id) ? 'remove from favorites' : 'add to favorites'}
+                    {isFav ? 'remove from favorites' : 'add to favorites'}
                 </div>
             </div>
 

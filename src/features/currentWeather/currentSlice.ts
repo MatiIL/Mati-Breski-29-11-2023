@@ -33,10 +33,6 @@ export const setCurrentWeather = createAction<{
   temparature: number | null;
 }>('currentWeather/setCurrentWeather');
 
-export const fetchCurrentWeatherFulfilled = createAction<WeatherData>(
-  "currentWeather/fetchCurrentWeatherFulfilled"
-);
-
 export const fetchCurrentWeather = createAsyncThunk(
   "currentWeather/fetchCurrentWeather",
   async ({ locationId, name }: { locationId: string; name: string }, { dispatch }) => {
@@ -51,8 +47,6 @@ export const fetchCurrentWeather = createAsyncThunk(
         weatherIcon: currentWeatherResponse.WeatherIcon,
         temparature: currentWeatherResponse.Temperature.Imperial.Value, 
       };
-
-      dispatch(fetchCurrentWeatherFulfilled(modifiedResponse));
       return modifiedResponse;
 
     } catch (error) {
