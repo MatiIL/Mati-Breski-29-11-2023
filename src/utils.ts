@@ -19,6 +19,13 @@ export const convertToCelsius = (val: number): number => {
   return Math.round(celsiusValue);
 };
 
+export const getDayAbbreviation = (timestamp: number): string => {
+  const date = new Date(timestamp);
+  const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+  const abbreviatedDay = dayOfWeek.slice(0, 3);
+  return abbreviatedDay;
+};
+
 export const debounce = <T extends (...args: any[]) => any>(
   func: T,
   delay: number

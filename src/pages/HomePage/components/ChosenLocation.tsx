@@ -6,7 +6,9 @@ import {
     Card,
     Container,
     Row,
-    Col
+    Col,
+    Tooltip,
+    OverlayTrigger,
 } from 'react-bootstrap';
 import { AppDispatch } from '../../../state/store';
 import { useAppDispatch, useAppSelector } from '../../../state/hooks';
@@ -16,6 +18,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUserGestureContext } from '../../../context/UserGestureContext';
 import AnimationComponent from './animation/AnimationComponent';
+import { getDayAbbreviation } from '../../../utils';
 
 const ChosenLocation: React.FC = () => {
     const dispatch: AppDispatch = useAppDispatch();
@@ -83,7 +86,18 @@ const ChosenLocation: React.FC = () => {
                                             key={day.timestamp}
                                             sm={true}
                                         >
-                                            <WeatherCard data={day} />
+                                            <OverlayTrigger
+                                                placement="bottom"
+                                                overlay={
+                                                    <Tooltip id="tooltip-id">
+                                                        {day.weatherText}
+                                                    </Tooltip>
+                                                }>
+                                                <WeatherCard data={day} cardTitle={
+                                                    day.timestamp ?
+                                                        getDayAbbreviation(day.timestamp) : ""
+                                                } />
+                                            </OverlayTrigger>
                                         </Col>
                                     ))}
                                 </Row>

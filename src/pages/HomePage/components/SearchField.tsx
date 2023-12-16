@@ -52,7 +52,19 @@ const SearchField: React.FC = () => {
       });
     } else {
       setInputValue(enteredValue);
-      debouncedFetchLocations(enteredValue);
+      if (enteredValue.length === 1) {
+        try {
+          await dispatch(fetchLocations(enteredValue));
+          setDropdownVisible(true);
+        } catch (error) {
+          console.error('fetchLocations rejected:', error);
+          toast.error('Sorry, something gone wrong with the weather API.', {
+            position: toast.POSITION.TOP_CENTER,
+            autoClose: 2000,
+            toastId: 'failedAutocomplete',
+          });
+        }
+      } else debouncedFetchLocations(enteredValue);
     }
   };
 
@@ -128,8 +140,7 @@ const SearchField: React.FC = () => {
             className={
               `list-group list-group-flush 
               ${isDropdownVisible &&
-                searchResults.length > 0 &&
-                dropdownRef.current !== null ?
+                searchResults.length > 0 ?
                 'visible' : 'd-none'}`
             }
           >
